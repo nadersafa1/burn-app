@@ -1,0 +1,25 @@
+{
+  "name": "@burn-app/auth",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@better-auth/expo": "^1.4.9",
+    "@burn-app/db": "*",
+    "@burn-app/env": "*",
+    "better-auth": "^1.4.9",
+    "dotenv": "^17.2.2",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@burn-app/config": "*",
+    "typescript": "^5"
+  }
+}

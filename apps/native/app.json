@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "scheme": "burn-app",
+    "userInterfaceStyle": "automatic",
+    "orientation": "default",
+    "web": {
+      "bundler": "metro"
+    },
+    "name": "burn-app",
+    "slug": "burn-app",
+    "plugins": ["expo-font"],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
