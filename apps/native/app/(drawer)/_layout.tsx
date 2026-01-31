@@ -65,22 +65,6 @@ function DrawerLayout() {
           ),
         }}
       />
-      <Drawer.Screen
-        name="ai"
-        options={{
-          headerTitle: "AI",
-          drawerLabel: ({ color, focused }) => (
-            <Text style={{ color: focused ? color : themeColorForeground }}>AI</Text>
-          ),
-          drawerIcon: ({ size, color, focused }) => (
-            <Ionicons
-              name="chatbubble-ellipses-outline"
-              size={size}
-              color={focused ? color : themeColorForeground}
-            />
-          ),
-        }}
-      />
     </Drawer>
   );
 }
