@@ -5,4 +5,6 @@ export { Container } from "./container";
 export { DayPill } from "./day-pill";
 export { MacroBar } from "./macro-bar";
 export { MealCard } from "./meal-card";
+export { PasswordInput } from "./password-input";
+export { TextInput } from "./text-input";
 export { ThemeToggle } from "./theme-toggle";

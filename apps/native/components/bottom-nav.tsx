@@ -50,7 +50,7 @@ export function BottomNav({ activeTab }: BottomNavProps) {
 
   return (
     <View
-      className="absolute left-4 right-4 rounded-full flex-row items-center justify-around p-2 bg-nav-pill shadow-md"
+      className="absolute flex justify-between left-4 right-4 rounded-full flex-row items-center  p-2 bg-nav-pill shadow-md"
       style={{ bottom: insets.bottom + 16 }}
     >
       <NavItem
