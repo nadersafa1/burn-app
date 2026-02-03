@@ -8,10 +8,26 @@
     },
     "name": "burn-app",
     "slug": "burn-app",
-    "plugins": ["expo-font"],
+    "plugins": [
+      "expo-font"
+    ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "814381d3-7237-4daf-aa3b-9688cfc504ab"
+      }
+    },
+    "owner": "burn-app",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/814381d3-7237-4daf-aa3b-9688cfc504ab"
+    },
+    "android": {},
+    "ios": {}
   }
 }
