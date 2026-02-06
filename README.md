@@ -23,6 +23,16 @@ First, install the dependencies:
 npm install
 ```
 
+## Environment Variables
+
+For the web app (`apps/web/.env`), configure:
+
+- **Database**: `DATABASE_URL` – PostgreSQL connection string
+- **Auth**: `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `CORS_ORIGIN`
+- **Email (verification & password reset)**: `NODEMAILER_HOST`, `NODEMAILER_USER`, `NODEMAILER_APP_PASSWORD`; optionally `NODEMAILER_PORT` (default 465). Required for email verification and forgot-password flows.
+
+For the native app (`apps/native/.env`), set `EXPO_PUBLIC_SERVER_URL` to your web API URL.
+
 ## Database Setup
 
 This project uses PostgreSQL with Drizzle ORM.

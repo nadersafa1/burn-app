@@ -6,17 +6,27 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 
+import { sendPasswordResetEmail } from "./emails/send-password-reset-email";
+import { sendVerificationEmail } from "./emails/send-verification-email";
+
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
   secret: env.BETTER_AUTH_SECRET,
   database: drizzleAdapter(db, {
     provider: "pg",
-
     schema: schema,
   }),
-  trustedOrigins: [env.CORS_ORIGIN, "mybettertapp://", "exp://"],
+  trustedOrigins: [env.CORS_ORIGIN, "mybettertapp://", "exp://", "burn-app://"],
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
+    sendResetPassword: sendPasswordResetEmail,
+  },
+  emailVerification: {
+    sendVerificationEmail,
+    sendOnSignUp: true,
+    expiresIn: 60 * 60 * 24, // 24 hours
+    autoSignInAfterVerification: true,
   },
   plugins: [nextCookies(), expo()],
 });

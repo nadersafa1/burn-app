@@ -2,12 +2,8 @@
   "name": "@burn-app/auth",
   "type": "module",
   "exports": {
-    ".": {
-      "default": "./src/index.ts"
-    },
-    "./*": {
-      "default": "./src/*.ts"
-    }
+    ".": { "default": "./src/index.ts" },
+    "./*": { "default": "./src/*.ts" }
   },
   "scripts": {},
   "dependencies": {
@@ -16,10 +12,12 @@
     "@burn-app/env": "*",
     "better-auth": "^1.4.9",
     "dotenv": "^17.2.2",
+    "nodemailer": "^7.0.10",
     "zod": "^4.1.13"
   },
   "devDependencies": {
     "@burn-app/config": "*",
+    "@types/nodemailer": "^7.0.3",
     "typescript": "^5"
   }
 }

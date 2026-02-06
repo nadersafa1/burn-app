@@ -121,6 +121,14 @@ export default function LoginScreen() {
               autoComplete="password"
             />
 
+            <View className="items-end">
+              <Link href="/(auth)/forgot-password" asChild>
+                <TouchableOpacity>
+                  <Text className="text-accent font-medium text-sm">Forgot password?</Text>
+                </TouchableOpacity>
+              </Link>
+            </View>
+
             {/* Social Login Buttons */}
             <View className="flex-row gap-3 mt-2">
               <TouchableOpacity
