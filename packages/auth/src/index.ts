@@ -1,24 +1,25 @@
-import { expo } from "@better-auth/expo";
-import { db } from "@burn-app/db";
-import * as schema from "@burn-app/db/schema/auth";
-import { env } from "@burn-app/env/server";
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { nextCookies } from "better-auth/next-js";
-import { admin, organization } from "better-auth/plugins";
+import { expo } from '@better-auth/expo'
+import { db } from '@burn-app/db'
+import * as schema from '@burn-app/db/schema/auth'
+import { env } from '@burn-app/env/server'
+import { betterAuth } from 'better-auth'
+import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { nextCookies } from 'better-auth/next-js'
+import { admin, organization } from 'better-auth/plugins'
 
-import { sendPasswordResetEmail } from "./emails/send-password-reset-email";
-import { ac, owner, admin as adminRole, member } from "./permissions";
-import { sendVerificationEmail } from "./emails/send-verification-email";
+import { sendPasswordResetEmail } from './emails/send-password-reset-email'
+import { ac, owner, admin as adminRole, member } from './permissions'
+import { sendVerificationEmail } from './emails/send-verification-email'
+import { sendOrganizationInvitation } from './emails/send-organization-invitation'
 
 export const auth = betterAuth({
   baseURL: env.BETTER_AUTH_URL,
   secret: env.BETTER_AUTH_SECRET,
   database: drizzleAdapter(db, {
-    provider: "pg",
+    provider: 'pg',
     schema: schema,
   }),
-  trustedOrigins: [env.CORS_ORIGIN, "mybettertapp://", "exp://", "brnit://"],
+  trustedOrigins: [env.CORS_ORIGIN, 'mybettertapp://', 'exp://', 'brnit://'],
   socialProviders:
     env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
       ? {
@@ -42,13 +43,32 @@ export const auth = betterAuth({
   },
   plugins: [
     nextCookies(),
-    admin({ defaultRole: "user" }),
+    admin({ defaultRole: 'user' }),
     organization({
       ac,
       roles: { owner, admin: adminRole, member },
-      creatorRole: "owner",
-      allowUserToCreateOrganization: () => true,
+      creatorRole: 'owner',
+      membershipLimit: 100,
+      allowUserToCreateOrganization: async (user) => user.role === 'admin',
+      async sendInvitationEmail(data) {
+        const baseUrl =
+          env.BETTER_AUTH_URL?.replace(/\/$/, '') ?? 'http://localhost:3000'
+        const inviteLink = `${baseUrl}/accept-invitation?invitationId=${data.id}`
+        await sendOrganizationInvitation({
+          email: data.email,
+          invitedByUsername: data.inviter.user.name,
+          invitedByEmail: data.inviter.user.email,
+          organizationName: data.organization.name,
+          inviteLink,
+        })
+      },
+      organizationHooks: {
+        beforeCreateInvitation: async ({ invitation }) => {
+          const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+          return { data: { ...invitation, expiresAt } }
+        },
+      },
     }),
     expo(),
   ],
-});
+})
