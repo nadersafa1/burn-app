@@ -1,25 +1,13 @@
 import { auth } from "@burn-app/auth";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 
-import { authClient } from "@/lib/auth-client";
-
-import Dashboard from "./dashboard";
+import { WelcomeCard } from "./welcome-card";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
+  const user = session!.user!;
 
-  if (!session?.user) {
-    redirect("/login");
-  }
-
-  return (
-    <div>
-      <h1>Dashboard</h1>
-      <p>Welcome {session.user.name}</p>
-      <Dashboard session={session} />
-    </div>
-  );
+  return <WelcomeCard user={user} />;
 }

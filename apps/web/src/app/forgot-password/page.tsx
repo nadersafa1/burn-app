@@ -1,111 +1,106 @@
-'use client'
+"use client";
 
-import { useForm } from '@tanstack/react-form'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import z from 'zod'
+import Link from "next/link";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-import { authClient } from '@/lib/auth-client'
+import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+const forgotSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+type ForgotFormValues = z.infer<typeof forgotSchema>;
 
 export default function ForgotPasswordPage() {
-  const router = useRouter()
-  const [sent, setSent] = useState(false)
+  const [sent, setSent] = useState(false);
 
-  const form = useForm({
-    defaultValues: {
-      email: '',
-    },
-    onSubmit: async ({ value }) => {
-      const { error } = await authClient.requestPasswordReset({
-        email: value.email,
-        redirectTo: '/reset-password',
-      })
-      if (error) {
-        toast.error(error.message || 'Failed to send reset link')
-        return
-      }
-      setSent(true)
-      toast.success('Check your email for a reset link')
-    },
-    validators: {
-      onSubmit: z.object({
-        email: z.email('Invalid email address'),
-      }),
-    },
-  })
+  const form = useForm<ForgotFormValues>({
+    resolver: zodResolver(forgotSchema),
+    defaultValues: { email: "" },
+  });
+
+  const onSubmit = form.handleSubmit(async (values) => {
+    const { error } = await authClient.requestPasswordReset({
+      email: values.email,
+      redirectTo: "/reset-password",
+    });
+    if (error) {
+      toast.error(error.message ?? "Failed to send reset link");
+      return;
+    }
+    setSent(true);
+    toast.success("Check your email for a reset link");
+  });
 
   if (sent) {
     return (
-      <div className='mx-auto w-full mt-10 max-w-md p-6'>
-        <h1 className='mb-6 text-center text-3xl font-bold'>Check your email</h1>
-        <p className='mb-6 text-center text-muted-foreground'>
-          If an account exists for that email, we&apos;ve sent a link to reset your password.
-        </p>
-        <div className='text-center'>
-          <Link href='/login' className='underline-offset-4 hover:underline text-indigo-600 hover:text-indigo-800'>
-            Back to sign in
-          </Link>
-        </div>
+      <div className="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle className="text-center">Check your email</CardTitle>
+            <CardDescription className="text-center">
+              If an account exists for that email, we&apos;ve sent a link to reset your password.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            <Link href="/login">
+              <Button variant="link" className="text-primary">
+                Back to sign in
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
-    )
+    );
   }
 
   return (
-    <div className='mx-auto w-full mt-10 max-w-md p-6'>
-      <h1 className='mb-6 text-center text-3xl font-bold'>Forgot password</h1>
-      <p className='mb-6 text-center text-muted-foreground'>
-        Enter your email and we&apos;ll send you a link to reset your password.
-      </p>
-
-      <form
-        onSubmit={e => {
-          e.preventDefault()
-          e.stopPropagation()
-          form.handleSubmit()
-        }}
-        className='space-y-4'
-      >
-        <form.Field name='email'>
-          {field => (
-            <div className='space-y-2'>
-              <Label htmlFor={field.name}>Email</Label>
-              <Input
-                id={field.name}
-                name={field.name}
-                type='email'
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={e => field.handleChange(e.target.value)}
-              />
-              {field.state.meta.errors.map(error => (
-                <p key={error?.message} className='text-red-500'>
-                  {error?.message}
+    <div className="bg-background flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle>Forgot password</CardTitle>
+          <CardDescription>
+            Enter your email and we&apos;ll send you a link to reset your password.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={onSubmit}>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="email">Email</FieldLabel>
+                <Input id="email" type="email" placeholder="m@example.com" {...form.register("email")} />
+                {form.formState.errors.email && (
+                  <p className="text-sm text-destructive">{form.formState.errors.email.message}</p>
+                )}
+              </Field>
+              <Field>
+                <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting ? "Sending..." : "Send reset link"}
+                </Button>
+                <p className="text-center text-sm text-muted-foreground">
+                  <Link href="/login" className="underline underline-offset-4 hover:text-primary">
+                    Back to sign in
+                  </Link>
                 </p>
-              ))}
-            </div>
-          )}
-        </form.Field>
-
-        <form.Subscribe>
-          {state => (
-            <Button type='submit' className='w-full' disabled={!state.canSubmit || state.isSubmitting}>
-              {state.isSubmitting ? 'Sending...' : 'Send reset link'}
-            </Button>
-          )}
-        </form.Subscribe>
-      </form>
-
-      <div className='mt-4 text-center'>
-        <Link href='/login' className='underline-offset-4 hover:underline text-indigo-600 hover:text-indigo-800'>
-          Back to sign in
-        </Link>
-      </div>
+              </Field>
+            </FieldGroup>
+          </form>
+        </CardContent>
+      </Card>
     </div>
-  )
+  );
 }
