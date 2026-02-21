@@ -1,56 +1,48 @@
-import Link from "next/link";
+import Link from 'next/link'
 
-import { auth } from "@burn-app/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { auth } from '@burn-app/auth'
+import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 
 export default async function HomePage() {
   const session = await auth.api.getSession({
     headers: await headers(),
-  });
+  })
 
   if (session?.user) {
-    redirect("/dashboard");
+    redirect('/dashboard')
   }
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-8 bg-background p-6 md:p-10">
-      <div className="flex w-full max-w-md flex-col items-center gap-6 text-center">
-        <h1 className="text-3xl font-bold tracking-tight">Brnit</h1>
-        <p className="text-muted-foreground">
+    <div className='flex min-h-svh flex-col items-center justify-center gap-8 bg-background p-6 md:p-10'>
+      <div className='flex w-full max-w-md flex-col items-center gap-6 text-center'>
+        <h1 className='text-3xl font-bold tracking-tight'>Brnit</h1>
+        <p className='text-muted-foreground'>
           Challenge yourself with your group. Diet and exercise tailored for a healthier life.
         </p>
-        <Card className="w-full max-w-sm">
+        <Card className='w-full max-w-sm'>
           <CardHeader>
             <CardTitle>Get started</CardTitle>
-            <CardDescription>
-              Sign in or create an account to join your organization.
-            </CardDescription>
+            <CardDescription>Sign in or create an account to join your organization.</CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col gap-2">
+          <CardContent className='flex flex-col gap-2'>
             <Link
-              href="/login"
+              href='/login'
               className={cn(
-                "inline-flex h-8 items-center justify-center rounded-none border border-transparent bg-primary px-2.5 text-xs font-medium text-primary-foreground hover:bg-primary/80",
-                "w-full"
+                'inline-flex h-8 items-center justify-center border border-transparent bg-primary px-2.5 text-xs font-medium text-primary-foreground hover:bg-primary/80 rounded-md',
+                'w-full'
               )}
             >
               Log in
             </Link>
             <Link
-              href="/signup"
+              href='/signup'
               className={cn(
-                "inline-flex h-8 items-center justify-center rounded-none border border-border bg-background px-2.5 text-xs font-medium hover:bg-muted",
-                "w-full"
+                'inline-flex h-8 items-center justify-center border border-border bg-background px-2.5 text-xs font-medium hover:bg-muted rounded-md',
+                'w-full'
               )}
             >
               Sign up
@@ -59,5 +51,5 @@ export default async function HomePage() {
         </Card>
       </div>
     </div>
-  );
+  )
 }
