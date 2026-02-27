@@ -40,7 +40,7 @@ export function NavMain({
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.title}>
-                <Link href={item.url as "/dashboard" | "/dashboard/organizations"}>
+                <Link href={item.url as "/dashboard" | "/dashboard/organizations" | "/dashboard/admin"}>
                   <item.icon />
                   <span>{item.title}</span>
                 </Link>

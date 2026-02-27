@@ -34,18 +34,23 @@ const InviteMemberForm = ({ organizationId, onSuccess }: { organizationId: strin
   })
 
   const onSubmit = form.handleSubmit(async values => {
-    const { error } = await authClient.organization.inviteMember({
-      email: values.email,
-      role: values.role,
-      organizationId,
-    })
-    if (error) {
-      toast.error(error.message ?? 'Failed to send invitation')
-      return
+    try {
+      const { error } = await authClient.organization.inviteMember({
+        email: values.email,
+        role: values.role,
+        organizationId,
+      })
+      if (error) {
+        toast.error(error.message ?? 'Failed to send invitation')
+        return
+      }
+      toast.success('Invitation sent')
+      form.reset({ email: '', role: 'member' })
+      onSuccess?.()
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Failed to send invitation'
+      toast.error(message)
     }
-    toast.success('Invitation sent')
-    form.reset({ email: '', role: 'member' })
-    onSuccess?.()
   })
 
   return (

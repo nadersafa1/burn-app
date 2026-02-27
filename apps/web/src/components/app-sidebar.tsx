@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useMemo } from 'react'
 import { Flame, LayoutDashboard, UserCog } from 'lucide-react'
 
 import { NavMain } from '@/components/nav-main'
@@ -14,8 +15,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { authClient } from '@/lib/auth-client'
 
-const navMain = [
+const baseNavItems = [
   {
     title: 'Dashboard',
     url: '/dashboard',
@@ -29,15 +31,25 @@ const navMain = [
     icon: Flame,
     items: [],
   },
-  {
-    title: 'Admin',
-    url: '/dashboard/admin',
-    icon: UserCog,
-    items: [],
-  },
 ]
 
-export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+const adminNavItem = {
+  title: 'Admin',
+  url: '/dashboard/admin',
+  icon: UserCog,
+  items: [],
+}
+
+export const AppSidebar = (props: React.ComponentProps<typeof Sidebar>) => {
+  const { data: session } = authClient.useSession()
+  const navMain = useMemo(
+    () =>
+      session?.user?.role === 'admin'
+        ? [...baseNavItems, adminNavItem]
+        : baseNavItems,
+    [session?.user?.role],
+  )
+
   return (
     <Sidebar variant='inset' {...props}>
       <SidebarHeader>

@@ -2,6 +2,7 @@ import { expo } from '@better-auth/expo'
 import { db } from '@burn-app/db'
 import * as schema from '@burn-app/db/schema/auth'
 import { env } from '@burn-app/env/server'
+import { APIError } from 'better-auth/api'
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { nextCookies } from 'better-auth/next-js'
@@ -78,10 +79,18 @@ export const auth = betterAuth({
           invitedByEmail: data.inviter.user.email,
           organizationName: data.organization.name,
           inviteLink,
+          invitationRole: data.invitation.role,
         })
       },
       organizationHooks: {
-        beforeCreateInvitation: async ({ invitation }) => {
+        beforeCreateInvitation: async ({ invitation, inviter }) => {
+          if (invitation.role !== 'member') {
+            if (!['org_admin', 'owner'].includes(inviter.role)) {
+              throw new APIError('BAD_REQUEST', {
+                message: 'You can only invite members with member role',
+              })
+            }
+          }
           const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
           return { data: { ...invitation, expiresAt } }
         },
