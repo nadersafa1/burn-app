@@ -5,10 +5,10 @@ Backend logic for organizations and invitations is implemented via **better-auth
 ## Flow
 
 1. **App admin** (user with `role === 'admin'`) creates an organization → they become **owner**.
-2. App admin **invites corporate HR** with role **admin** via `organization.inviteMember({ email, role: 'admin' })`.
-3. HR accepts the invitation (link in email) → becomes org **admin**.
-4. Org admin **invites employees** with role **member** (max 100 members per org).
-5. Employees accept → join the organization. Weekly rank can be derived from inbody data (separate feature).
+2. App admin **invites corporate HR** with role **client_admin** via `organization.inviteMember({ email, role: 'client_admin' })`.
+3. HR accepts the invitation (link in email) → becomes org **client_admin**.
+4. Owner or client_admin **invites** others with roles: **client_admin**, **direct_admin**, **nutritionist**, **coach**, or **member** (max 100 members per org).
+5. Invitees accept → join the organization. See [docs/ROLES.md](ROLES.md) for role meanings.
 
 ## Backend configuration (`packages/auth`)
 
@@ -25,6 +25,10 @@ Backend logic for organizations and invitations is implemented via **better-auth
 - **Accept invitation:** `authClient.organization.acceptInvitation({ invitationId })`.
 - **Cancel invitation:** `authClient.organization.cancelInvitation({ invitationId })`.
 - **Get invitation:** `authClient.organization.getInvitation({ id })`.
+- **List members:** `authClient.organization.listMembers({ organizationId })`.
+- **Remove member:** `authClient.organization.removeMember({ memberId, organizationId })`.
+- **Update member role:** `authClient.organization.updateMemberRole({ memberId, role, organizationId })`.
+- **Set active organization:** `authClient.organization.setActiveOrganization({ organizationId })` — persists on the session; use for org-scoped features and after accepting an invitation.
 
 ## Accept-invitation link
 
@@ -32,13 +36,17 @@ Invitation emails use:
 
 `{BETTER_AUTH_URL}/accept-invitation?invitationId={id}`
 
-The **web app** should expose a route (e.g. `/accept-invitation`) that:
+The **web app** exposes `/accept-invitation` and:
 
 1. Reads `invitationId` from the query.
-2. If the user is signed in: calls `authClient.organization.acceptInvitation({ invitationId })`, then redirects (e.g. dashboard).
-3. If not signed in: redirect to login, then after login redirect back to `/accept-invitation?invitationId=...` to accept.
+2. If the user is signed in: calls `authClient.organization.acceptInvitation({ invitationId })`, then calls `setActiveOrganization` with the joined org when the API returns it, then redirects to dashboard.
+3. If not signed in: redirect to login (and signup link preserves `invitationId`); after login/signup, redirect back to `/accept-invitation?invitationId=...` to accept.
 
-Native app can handle the same link via deep link and call `authClient.organization.acceptInvitation({ invitationId })` when the user is authenticated.
+**Native app:** Deep link `brnit://accept-invitation?invitationId={id}` opens the accept-invitation screen. If not signed in, user is sent to login with `invitationId`; after login they are redirected to accept-invitation. After `acceptInvitation` success, the app calls `setActiveOrganization` with the joined org when returned, then navigates to the main tabs.
+
+## Active organization
+
+The session stores `activeOrganizationId`. After a user accepts an invitation, the app sets the joined org as active via `setActiveOrganization`. On the organizations dashboard, changing the organization selector also calls `setActiveOrganization` so the session stays in sync. Any org-scoped API or server logic can read the active org from the session.
 
 ## Making a user an app admin
 

@@ -1,6 +1,9 @@
 import { cn } from "@/lib/utils"
 
-function Skeleton({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
+function Skeleton({
+  className,
+  ...props
+}: Readonly<React.ComponentPropsWithoutRef<"div">>) {
   return (
     <div
       data-slot="skeleton"

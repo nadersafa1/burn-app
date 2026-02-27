@@ -16,7 +16,7 @@ import Loader from '@/components/loader'
 import { Flame } from 'lucide-react'
 
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: z.email('Invalid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
 })
 
@@ -40,9 +40,17 @@ const AppleIcon = () => (
   </svg>
 )
 
-export const LoginForm = ({ className }: { className?: string } = {}) => {
+export const LoginForm = ({
+  className,
+  callbackUrl,
+  invitationId,
+}: { className?: string; callbackUrl?: string; invitationId?: string } = {}) => {
   const router = useRouter()
   const { isPending } = authClient.useSession()
+  const redirectTo = callbackUrl ?? '/dashboard'
+  const signupHref = invitationId
+    ? `/signup?invitationId=${encodeURIComponent(invitationId)}&callbackUrl=${encodeURIComponent('/accept-invitation')}`
+    : '/signup'
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -54,7 +62,7 @@ export const LoginForm = ({ className }: { className?: string } = {}) => {
       { email: values.email, password: values.password },
       {
         onSuccess: () => {
-          router.push('/dashboard')
+          router.push(redirectTo as any)
           toast.success('Sign in successful')
         },
         onError: ctx => {
@@ -66,7 +74,7 @@ export const LoginForm = ({ className }: { className?: string } = {}) => {
 
   const handleGoogleSignIn = () => {
     authClient.signIn.social(
-      { provider: 'google', callbackURL: '/dashboard' },
+      { provider: 'google', callbackURL: redirectTo },
       {
         onError: ctx => {
           toast.error(ctx.error?.message ?? 'Google sign-in failed')
@@ -95,7 +103,7 @@ export const LoginForm = ({ className }: { className?: string } = {}) => {
             <h1 className='text-xl font-bold'>Welcome to Brnit</h1>
             <FieldDescription>
               Don&apos;t have an account?{' '}
-              <Link href='/signup' className='underline underline-offset-4 hover:text-primary'>
+              <Link href={signupHref as any} className='underline underline-offset-4 hover:text-primary'>
                 Sign up
               </Link>
             </FieldDescription>

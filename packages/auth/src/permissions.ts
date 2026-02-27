@@ -1,9 +1,8 @@
 /**
  * Organization access control (ac) and roles.
  *
- * To extend:
- * - New resource statements: add to createAccessControl({ ...defaultStatements, myResource: ['create','read','update','delete'] }).
- * - New role: ac.newRole({ ...memberAc.statements, myResource: ['read'] }), then add to roles in auth index and in web/native auth-client.
+ * Org roles: owner, client_admin, direct_admin, nutritionist, coach, member.
+ * See docs/ROLES.md for app-level and org-level role documentation.
  */
 import {
   defaultStatements,
@@ -21,8 +20,26 @@ export const owner = ac.newRole({
   ...ownerAc.statements,
 })
 
-export const admin = ac.newRole({
+export const client_admin = ac.newRole({
   ...adminAc.statements,
+})
+
+export const direct_admin = ac.newRole({
+  ...memberAc.statements,
+  member: ['update', 'delete'],
+  invitation: [],
+})
+
+export const nutritionist = ac.newRole({
+  ...memberAc.statements,
+  member: [],
+  invitation: [],
+})
+
+export const coach = ac.newRole({
+  ...memberAc.statements,
+  member: [],
+  invitation: [],
 })
 
 export const member = ac.newRole({

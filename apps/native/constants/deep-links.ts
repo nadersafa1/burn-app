@@ -10,4 +10,6 @@ export const DEEP_LINKS = {
   root: `${DEEP_LINK_BASE}`,
   /** Password reset page - includes ?token=xxx when used */
   resetPassword: `${DEEP_LINK_BASE}reset-password`,
+  /** Organization invitation: use ?invitationId=xxx (same as web /accept-invitation) */
+  acceptInvitation: `${DEEP_LINK_BASE}accept-invitation`,
 } as const;

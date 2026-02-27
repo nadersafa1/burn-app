@@ -1,6 +1,6 @@
 import { ErrorView } from 'heroui-native'
 import { Ionicons } from '@expo/vector-icons'
-import { Link, Redirect } from 'expo-router'
+import { Link, Redirect, useLocalSearchParams } from 'expo-router'
 import { useState } from 'react'
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -10,6 +10,7 @@ import { authClient } from '@/lib/auth-client'
 
 export default function LoginScreen() {
   const insets = useSafeAreaInsets()
+  const { invitationId } = useLocalSearchParams<{ invitationId?: string }>()
   const { data: session, isPending } = authClient.useSession()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -25,8 +26,11 @@ export default function LoginScreen() {
     )
   }
 
-  // Redirect to tabs if already signed in
+  // If already signed in and we have invitationId, go to accept-invitation; else tabs
   if (session?.user) {
+    if (invitationId) {
+      return <Redirect href={{ pathname: '/accept-invitation', params: { invitationId } }} />
+    }
     return <Redirect href='/(tabs)' />
   }
 

@@ -8,7 +8,15 @@ import { nextCookies } from 'better-auth/next-js'
 import { admin, organization } from 'better-auth/plugins'
 
 import { sendPasswordResetEmail } from './emails/send-password-reset-email'
-import { ac, owner, admin as adminRole, member } from './permissions'
+import {
+  ac,
+  owner,
+  client_admin,
+  direct_admin,
+  nutritionist,
+  coach,
+  member,
+} from './permissions'
 import { sendVerificationEmail } from './emails/send-verification-email'
 import { sendOrganizationInvitation } from './emails/send-organization-invitation'
 
@@ -46,14 +54,24 @@ export const auth = betterAuth({
     admin({ defaultRole: 'user' }),
     organization({
       ac,
-      roles: { owner, admin: adminRole, member },
+      roles: {
+        owner,
+        client_admin,
+        direct_admin,
+        nutritionist,
+        coach,
+        member,
+      },
       creatorRole: 'owner',
       membershipLimit: 100,
       allowUserToCreateOrganization: async (user) => user.role === 'admin',
       async sendInvitationEmail(data) {
-        const baseUrl =
-          env.BETTER_AUTH_URL?.replace(/\/$/, '') ?? 'http://localhost:3000'
-        const inviteLink = `${baseUrl}/accept-invitation?invitationId=${data.id}`
+        const appOrigin =
+          env.CORS_ORIGIN?.replace(/\/$/, '') ||
+          (env.BETTER_AUTH_URL
+            ? new URL(env.BETTER_AUTH_URL).origin
+            : 'http://localhost:3000')
+        const inviteLink = `${appOrigin}/accept-invitation?invitationId=${data.id}`
         await sendOrganizationInvitation({
           email: data.email,
           invitedByUsername: data.inviter.user.name,

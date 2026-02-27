@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { Flame, LayoutDashboard } from "lucide-react";
+import Link from 'next/link'
+import { Flame, LayoutDashboard, UserCog } from 'lucide-react'
 
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
+import { NavMain } from '@/components/nav-main'
+import { NavUser } from '@/components/nav-user'
 import {
   Sidebar,
   SidebarContent,
@@ -13,38 +13,44 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from '@/components/ui/sidebar'
 
 const navMain = [
   {
-    title: "Dashboard",
-    url: "/dashboard",
+    title: 'Dashboard',
+    url: '/dashboard',
     icon: LayoutDashboard,
     isActive: true,
     items: [],
   },
   {
-    title: "Organizations",
-    url: "/dashboard/organizations",
+    title: 'Organizations',
+    url: '/dashboard/organizations',
     icon: Flame,
     items: [],
   },
-];
+  {
+    title: 'Admin',
+    url: '/dashboard/admin',
+    icon: UserCog,
+    items: [],
+  },
+]
 
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar variant="inset" {...props}>
+    <Sidebar variant='inset' {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild>
-              <Link href="/dashboard">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Flame className="size-4" />
+            <SidebarMenuButton size='lg' asChild>
+              <Link href='/dashboard'>
+                <div className='bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg'>
+                  <Flame className='size-4' />
                 </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Brnit</span>
-                  <span className="truncate text-xs">Health challenges</span>
+                <div className='grid flex-1 text-left text-sm leading-tight'>
+                  <span className='truncate font-medium'>Brnit</span>
+                  <span className='truncate text-xs'>Health challenges</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -58,5 +64,5 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <NavUser />
       </SidebarFooter>
     </Sidebar>
-  );
+  )
 }
